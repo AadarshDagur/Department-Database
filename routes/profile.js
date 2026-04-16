@@ -153,6 +153,12 @@ router.put('/:id', isLoggedIn, uploadBlob.single('profile_image'), async (req, r
           req.flash('error', 'Failed to save image locally: ' + fsErr.message);
           return res.redirect(`/profile/${req.params.id}/edit`);
         }
+      }
+    }
+
+    let sql = `UPDATE users SET first_name = $1, last_name = $2,
+      get_otp_email = $3, get_email_notification = $4, get_email_broadcast = $5`;
+
     const params = [first_name, last_name || '',
       get_otp_email === 'on', get_email_notification === 'on', get_email_broadcast === 'on'];
 
