@@ -1,0 +1,24 @@
+<% layout('layouts/boilerplate') %>
+<div class="mb-3"><a href="/batches" class="text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to Batches</a></div>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white"><h3 class="mb-0"><%= batch ? 'Edit Batch' : 'Add Batch' %></h3></div>
+  <div class="card-body">
+    <% const isEdit = !!batch; const action = isEdit ? '/batches/' + batch.id + '?_method=PUT' : '/batches'; %>
+    <form method="POST" action="<%= action %>">
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Degree *</label>
+          <select name="degree" class="form-select" required>
+            <option value="UG" <%= isEdit && batch.degree === 'UG' ? 'selected' : '' %>>UG</option>
+            <option value="PG" <%= isEdit && batch.degree === 'PG' ? 'selected' : '' %>>PG</option>
+            <option value="PhD" <%= isEdit && batch.degree === 'PhD' ? 'selected' : '' %>>PhD</option>
+          </select>
+        </div>
+        <div class="col-md-6"><label class="form-label">Year *</label><input type="number" name="year" class="form-control" value="<%= isEdit ? (batch.year || '') : '' %>" min="2000" max="2100" required></div>
+        <div class="col-12 mt-4">
+          <button type="submit" class="btn btn-primary me-2"><i class="bi bi-check-lg me-1"></i>Save</button>
+          <a href="/batches" class="btn btn-light">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

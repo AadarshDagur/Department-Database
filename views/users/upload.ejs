@@ -1,0 +1,39 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="mb-1"><i class="bi bi-people me-2"></i>Bulk Upload Students</h2>
+  </div>
+  <a href="/users" class="action-btn"><i class="bi bi-arrow-left me-1"></i>Back to Users</a>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="POST" action="/users/upload" enctype="multipart/form-data" id="csvUploadForm">
+      <div class="csv-upload-zone" id="csvDropZone">
+        <i class="bi bi-cloud-arrow-up"></i>
+        <p class="mb-1 fw-semibold">Drag & drop your CSV file here</p>
+        <p class="text-muted small mb-2">or click to browse</p>
+        <input type="file" name="csv" id="csvFileInput" accept=".csv" required class="d-none">
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('csvFileInput').click()">
+          <i class="bi bi-folder2-open me-1"></i>Browse Files
+        </button>
+        <div id="csvFileName" class="mt-2 text-success fw-semibold d-none"></div>
+      </div>
+
+      <div class="mt-3 p-3 rounded" style="background: #f0f4f8; font-size: 0.85rem;">
+        <p class="mb-1 fw-semibold" style="color: var(--iit-blue);"><i class="bi bi-info-circle me-1"></i>CSV Format</p>
+        <p>First row should contain column headers. Expected fields:</p>
+        <code class="d-block text-wrap" style="font-size: 0.8rem;">email, password, first_name, last_name, faculty_advisor_email, batch_year, batch_degree</code>
+        
+      </div>
+
+      <div class="mt-3 d-flex gap-2">
+        <button type="submit" class="btn" style="background: var(--iit-blue); color: #fff;" id="csvUploadBtn">
+          <i class="bi bi-upload me-1"></i>Upload & Import
+        </button>
+        <a href="/users" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+<% layout('layouts/boilerplate') %>
+<div class="mb-3"><a href="/achievements" class="text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to Achievements</a></div>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white d-flex justify-content-between"><h3 class="mb-0"><%= item.title %></h3><span class="badge bg-warning text-dark"><%= item.achievement_type || '' %></span></div>
+  <div class="card-body"><div class="row g-4">
+    <div class="col-md-8">
+      <% if (item.description) { %><h5>Description</h5><p><%= item.description %></p><% } %>
+      <div class="row g-3">
+        <% if (item.position) { %><div class="col-sm-6"><strong>Position:</strong> <%= item.position %></div><% } %>
+        <% if (item.event_name) { %><div class="col-sm-6"><strong>Event:</strong> <%= item.event_name %></div><% } %>
+        <% if (item.event_date) { %><div class="col-sm-6"><strong>Date:</strong> <%= new Date(item.event_date).toLocaleDateString() %></div><% } %>
+        <% if (item.participants) { %><div class="col-sm-6"><strong>Participants:</strong> <%= item.participants %></div><% } %>
+      </div>
+      <% if (item.members && item.members.length > 0) { %><h5 class="mt-4">Members</h5><div class="d-flex flex-wrap gap-2"><% item.members.forEach(m => { %><span class="badge bg-light text-dark border"><%= m.first_name %> <%= m.last_name %></span><% }); %></div><% } %>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-light border-0"><div class="card-body"><p class="mb-1"><strong>Created by:</strong> <%= item.creator_name || 'Unknown' %></p><p class="mb-0"><strong>Created:</strong> <%= item.created_date ? new Date(item.created_date).toLocaleString() : '' %></p></div></div>
+      
+      <% if (currentUser && ['faculty', 'admin'].includes(currentUser.user_type) && item.object_type === 'P') { %>
+      <div class="card mt-3 border-warning">
+        <div class="card-header bg-warning bg-opacity-10 text-warning-emphasis"><strong><i class="bi bi-exclamation-triangle me-2"></i>Pending Approval</strong></div>
+        <div class="card-body">
+          <p class="small text-muted mb-3">This submission requires review.</p>
+          <div class="d-flex flex-column gap-2">
+            <form method="POST" action="/achievements/<%= item.id %>/approve?_method=PUT">
+              <button class="btn btn-success w-100"><i class="bi bi-check-lg me-2"></i>Approve</button>
+            </form>
+            <form method="POST" action="/achievements/<%= item.id %>/reject?_method=PUT">
+              <button class="btn btn-danger w-100"><i class="bi bi-x-lg me-2"></i>Reject</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <% } %>
+
+      <% if (currentUser && (item.created_by === currentUser.id || ['admin'].includes(currentUser.user_type))) { %>
+      <div class="d-grid gap-2 mt-3">
+        <% if (!item.is_deleted) { %><a href="/achievements/<%= item.id %>/edit" class="btn btn-outline-primary"><i class="bi bi-pencil me-2"></i>Edit</a>
+        <form method="POST" action="/achievements/<%= item.id %>?_method=DELETE" onsubmit="return confirm('Delete?')"><button class="btn btn-outline-danger w-100"><i class="bi bi-trash me-2"></i>Delete</button></form>
+        <% } else { %><form method="POST" action="/achievements/<%= item.id %>/restore?_method=PUT"><button class="btn btn-outline-success w-100">Restore</button></form><% } %>
+      </div><% } %>
+    </div>
+  </div></div>
+</div>

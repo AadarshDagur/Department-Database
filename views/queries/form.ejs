@@ -1,0 +1,33 @@
+<% layout('layouts/boilerplate') %>
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><h3 class="mb-0">Submit a Query</h3></div>
+      <div class="card-body">
+        <form method="POST" action="/queries" enctype="multipart/form-data">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Category *</label>
+              <select name="category" class="form-select" required><option value="">Select Category</option>
+                <option value="Bug">Bug Report</option>
+                <option value="Feature Request">Feature Request</option>
+                <option value="General">General Query</option>
+                <option value="General">Access Issue</option>
+                <option value="General">Data Correction</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6"><label class="form-label">Priority</label>
+              <select name="priority" class="form-select"><option value="Low">Low</option><option value="Medium" selected>Medium</option><option value="High">High</option></select>
+            </div>
+            <div class="col-12"><label class="form-label">Subject *</label><input type="text" name="subject" class="form-control" required></div>
+            <div class="col-12"><label class="form-label">Description *</label><textarea name="description" class="form-control" rows="6" required></textarea></div>
+            <div class="col-12"><label class="form-label">Screenshot (optional)</label><input type="file" name="screenshot" class="form-control" accept="image/*"></div>
+            <div class="col-12 mt-4">
+              <button type="submit" class="btn btn-primary"><i class="bi bi-send me-2"></i>Submit Query</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

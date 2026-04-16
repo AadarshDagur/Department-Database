@@ -1,0 +1,70 @@
+<% layout('layouts/boilerplate') %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>My Student Projects</h2>
+  <a href="/student-projects/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Project</a>
+</div>
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item"><a class="nav-link <%= tab === 'active' ? 'active' : '' %>" href="/student-projects/my">Active</a></li>
+  <li class="nav-item"><a class="nav-link <%= tab === 'drafts' ? 'active' : '' %>" href="/student-projects/drafts">Drafts</a></li>
+  <li class="nav-item"><a class="nav-link <%= tab === 'pending' ? 'active' : '' %>" href="/student-projects/pending">Pending</a></li>
+  <li class="nav-item"><a class="nav-link <%= tab === 'deleted' ? 'active' : '' %>" href="/student-projects/deleted">Deleted</a></li>
+</ul>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr><th>Title</th><th>Status</th><th>State</th><th>Start</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <% if (items.length === 0) { %>
+          <tr><td colspan="5" class="text-center text-muted py-4">No items</td></tr>
+        <% } %>
+        <% items.forEach(item => { %>
+          <tr>
+            <td><a href="/student-projects/<%= item.id %>" class="text-decoration-none"><%= item.title %></a></td>
+            <td><span class="badge bg-<%= item.status === 'Completed' ? 'success' : item.status === 'Ongoing' ? 'primary' : 'secondary' %>"><%= item.status || '' %></span></td>
+            <td>
+              <% if (item.is_draft) { %><span class="badge bg-secondary">Draft</span>
+              <% } else if (item.object_type === 'P') { %><span class="badge bg-warning text-dark">Pending</span>
+              <% } else if (item.object_type === 'R') { %><span class="badge bg-danger">Rejected</span>
+              <% } else if (item.is_deleted) { %><span class="badge bg-dark">Deleted</span>
+              <% } else { %><span class="badge bg-success">Active</span><% } %>
+            </td>
+            <td class="text-muted"><%= item.start_date ? new Date(item.start_date).toLocaleDateString() : '' %></td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <a href="/student-projects/<%= item.id %>" class="btn btn-outline-primary">View</a>
+                <% if (!item.is_deleted) { %>
+                  <a href="/student-projects/<%= item.id %>/edit" class="btn btn-outline-secondary">Edit</a>
+                <% } %>
+                <% if (item.is_draft) { %>
+                  <form method="POST" action="/student-projects/<%= item.id %>/submit?_method=PUT" class="d-inline">
+                    <button class="btn btn-outline-success btn-sm">Submit</button>
+                  </form>
+                <% } %>
+                <% if (tab === 'pending' && ['faculty'].includes(currentUser.user_type)) { %>
+                  <form method="POST" action="/student-projects/<%= item.id %>/approve?_method=PUT" class="d-inline">
+                    <button class="btn btn-outline-success btn-sm">Approve</button>
+                  </form>
+                  <form method="POST" action="/student-projects/<%= item.id %>/reject?_method=PUT" class="d-inline">
+                    <button class="btn btn-outline-danger btn-sm">Reject</button>
+                  </form>
+                <% } %>
+                <% if (item.is_deleted) { %>
+                  <form method="POST" action="/student-projects/<%= item.id %>/restore?_method=PUT" class="d-inline">
+                    <button class="btn btn-outline-info btn-sm">Restore</button>
+                  </form>
+                <% } else if (!item.is_draft && item.object_type !== 'P') { %>
+                  <form method="POST" action="/student-projects/<%= item.id %>?_method=DELETE" class="d-inline" onsubmit="return confirm('Delete?')">
+                    <button class="btn btn-outline-danger btn-sm">Delete</button>
+                  </form>
+                <% } %>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%- include('../partials/pagination') %>

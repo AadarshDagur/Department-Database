@@ -1,0 +1,36 @@
+<% layout('layouts/boilerplate') %>
+<div class="mb-3"><a href="/visits/my" class="text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to My Visits</a></div>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white"><h3 class="mb-0"><%= item ? 'Edit Visit' : 'Add Visit' %></h3></div>
+  <div class="card-body">
+    <% const isEdit = !!item; const action = isEdit ? '/visits/' + item.id + '?_method=PUT' : '/visits'; %>
+    <form method="POST" action="<%= action %>">
+      <div class="row g-3">
+        <div class="col-md-8"><label class="form-label">Title *</label><input type="text" name="title" class="form-control" value="<%= isEdit ? item.title : '' %>" required></div>
+        <div class="col-md-4"><label class="form-label">Visit Type *</label>
+          <select name="visit_type" class="form-select" required><option value="">Select Type</option>
+            <% ['Lecture','Conference','Seminar'].forEach(t => { %><option value="<%= t %>" <%= isEdit && item.visit_type === t ? 'selected' : '' %>><%= t %></option><% }); %>
+          </select>
+        </div>
+        <div class="col-12"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="4"><%= isEdit ? (item.description || '') : '' %></textarea></div>
+        <div class="col-md-6"><label class="form-label">Institution</label><input type="text" name="institution" class="form-control" value="<%= isEdit ? (item.institution || '') : '' %>"></div>
+        <div class="col-md-6"><label class="form-label">Visitor</label><input type="text" name="visitor" class="form-control" value="<%= isEdit ? (item.visitor || '') : '' %>"></div>
+        <div class="col-md-6"><label class="form-label">From Date</label><input type="date" name="from_date" class="form-control" value="<%= isEdit && item.from_date ? new Date(item.from_date).toISOString().split('T')[0] : '' %>"></div>
+        <div class="col-md-6"><label class="form-label">To Date</label><input type="date" name="to_date" class="form-control" value="<%= isEdit && item.to_date ? new Date(item.to_date).toISOString().split('T')[0] : '' %>"></div>
+        <div class="col-md-6"><label class="form-label">URL</label><input type="url" name="url" class="form-control" value="<%= isEdit ? (item.url || '') : '' %>"></div>
+        <div class="col-md-6"><label class="form-label" for="membersSearch">Members</label>
+          <input type="search" id="membersSearch" class="form-control mb-2" placeholder="Search members by name..." data-filter-target="membersSelect" autocomplete="off">
+          <select id="membersSelect" name="members" class="form-select searchable-multiselect" multiple size="5">
+            <% if (typeof users !== 'undefined') { users.forEach(u => { %><option value="<%= u.id %>" <%= isEdit && item.memberIds && item.memberIds.includes(u.id) ? 'selected' : '' %>><%= u.first_name %> <%= u.last_name %></option><% }); } %>
+          </select><small class="text-muted">Type to filter, then hold Ctrl/Cmd to select multiple</small>
+        </div>
+        </div>
+        <div class="col-12 mt-4">
+          <button type="submit" name="is_draft" value="false" class="btn btn-primary me-2"><i class="bi bi-check-lg me-1"></i>Save</button>
+          <button type="submit" name="is_draft" value="true" class="btn btn-outline-secondary me-2"><i class="bi bi-file-earmark me-1"></i>Save as Draft</button>
+          <a href="/visits/my" class="btn btn-light">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

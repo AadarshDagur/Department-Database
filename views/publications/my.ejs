@@ -1,0 +1,83 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="mb-1"><i class="bi bi-journal-text me-2"></i>My Publications</h2>
+  </div>
+  <a href="/publications/new" class="action-btn action-btn-primary"><i class="bi bi-plus-lg me-1"></i>New</a>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item"><a class="nav-link <%= tab === 'active' ? 'active' : '' %>" href="/publications/my">Active</a></li>
+  <li class="nav-item"><a class="nav-link <%= tab === 'drafts' ? 'active' : '' %>" href="/publications/drafts">Drafts</a></li>
+  <li class="nav-item"><a class="nav-link <%= tab === 'pending' ? 'active' : '' %>" href="/publications/pending">Pending</a></li>
+  <li class="nav-item"><a class="nav-link <%= tab === 'deleted' ? 'active' : '' %>" href="/publications/deleted">Deleted</a></li>
+</ul>
+
+<div class="table-container">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (items.length === 0) { %>
+          <tr><td colspan="5" class="text-center text-muted py-4">No items found</td></tr>
+        <% } %>
+        <% items.forEach(item => { %>
+          <tr>
+            <td><a href="/publications/<%= item.id %>" class="text-decoration-none"><%= item.title %></a></td>
+            <td><span class="badge bg-primary bg-opacity-10 text-primary"><%= item.publication_type %></span></td>
+            <td>
+              <% if (item.is_draft) { %><span class="badge bg-secondary">Draft</span>
+              <% } else if (item.object_type === 'P') { %><span class="badge bg-warning">Pending</span>
+              <% } else if (item.object_type === 'R') { %><span class="badge bg-danger">Rejected</span>
+              <% } else if (item.is_deleted) { %><span class="badge bg-dark">Deleted</span>
+              <% } else { %><span class="badge bg-success">Active</span><% } %>
+            </td>
+            <td class="text-muted"><%= item.created_date ? new Date(item.created_date).toLocaleDateString() : '' %></td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <a href="/publications/<%= item.id %>" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                <% if (!item.is_deleted) { %>
+                  <a href="/publications/<%= item.id %>/edit" class="btn btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                <% } %>
+                <% if (item.is_draft) { %>
+                  <form method="POST" action="/publications/<%= item.id %>/submit?_method=PUT" class="d-inline">
+                    <button class="btn btn-outline-success btn-sm" title="Submit"><i class="bi bi-send"></i></button>
+                  </form>
+                <% } %>
+                <% if (tab === 'pending' && ['faculty'].includes(currentUser.user_type)) { %>
+                  <form method="POST" action="/publications/<%= item.id %>/approve?_method=PUT" class="d-inline">
+                    <button class="btn btn-outline-success btn-sm" title="Approve"><i class="bi bi-check-lg"></i></button>
+                  </form>
+                  <form method="POST" action="/publications/<%= item.id %>/reject?_method=PUT" class="d-inline">
+                    <button class="btn btn-outline-danger btn-sm" title="Reject"><i class="bi bi-x-lg"></i></button>
+                  </form>
+                <% } %>
+                <% if (item.is_deleted) { %>
+                  <form method="POST" action="/publications/<%= item.id %>/restore?_method=PUT" class="d-inline">
+                    <button class="btn btn-outline-info btn-sm" title="Restore"><i class="bi bi-arrow-counterclockwise"></i></button>
+                  </form>
+                <% } else if (!item.is_draft && item.object_type !== 'P') { %>
+                  <form method="POST" action="/publications/<%= item.id %>?_method=DELETE" class="d-inline" onsubmit="return confirm('Delete this publication?')">
+                    <button class="btn btn-outline-danger btn-sm" title="Delete"><i class="bi bi-trash"></i></button>
+                  </form>
+                <% } %>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/pagination') %>

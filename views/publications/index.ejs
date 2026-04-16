@@ -1,0 +1,79 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="page-header">
+  <div>
+    <h2 class="mb-1"><i class="bi bi-journal-text me-2"></i>Publications</h2>
+    <p class="text-muted mb-0">Browse approved publications</p>
+  </div>
+  <% if (currentUser) { %>
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="/publications/my" class="action-btn">My Publications</a>
+      <a href="/publications/drafts" class="action-btn">Drafts</a>
+      <button class="action-btn" data-bs-toggle="modal" data-bs-target="#csvUploadModal"><i class="bi bi-upload me-1"></i>CSV Upload</button>
+      <a href="/publications/new" class="action-btn action-btn-primary"><i class="bi bi-plus-lg me-1"></i>New</a>
+    </div>
+  <% } %>
+</div>
+
+<!-- Search & Filter -->
+<div class="filter-bar">
+  <form class="row g-2" method="GET">
+    <div class="col-md-5">
+      <input type="text" class="form-control" name="search" placeholder="Search ...." value="<%= query.search || '' %>">
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" name="type">
+        <option value="">All Types</option>
+        <% ['Journal', 'Conference', 'Book', 'Book Chapter', 'Patent'].forEach(t => { %>
+          <option value="<%= t %>" <%= query.type === t ? 'selected' : '' %>><%= t %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <a href="/publications" class="btn btn-outline-secondary w-100">Clear</a>
+    </div>
+  </form>
+</div>
+
+<!-- Results Table -->
+<div class="table-container">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Created By</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (items.length === 0) { %>
+          <tr><td colspan="6" class="text-center py-5">
+            <div class="empty-state">
+              <i class="bi bi-journal-text"></i>
+              <p>No publications found</p>
+            </div>
+          </td></tr>
+        <% } %>
+        <% items.forEach(item => { %>
+          <tr>
+            <td><a href="/publications/<%= item.id %>" class="text-decoration-none fw-medium" style="color: var(--iit-blue);"><%= item.title %></a></td>
+            <td><span class="badge badge-type"><%= item.publication_type %></span></td>
+            <td><span class="badge badge-status-<%= item.status === 'Published' ? 'approved' : item.status === 'Submitted' ? 'pending' : item.status === 'Accepted' ? 'approved' : 'rejected' %>"><%= item.status || 'N/A' %></span></td>
+            <td class="text-muted"><%= item.creator_name || 'Unknown' %></td>
+            <td class="text-muted"><%= item.created_date ? new Date(item.created_date).toLocaleDateString() : '' %></td>
+            <td>
+              <a href="/publications/<%= item.id %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/pagination') %>
+<%- include('../partials/csv-upload-modal', { entityType: 'publications', sampleFields: 'title, description, publication_type, status, doi, isbn, issn, corpus_id, journal_name, publisher, volume, pages, year, month, url, published_date, accepted_date, authors' }) %>

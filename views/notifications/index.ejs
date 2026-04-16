@@ -1,0 +1,46 @@
+<% layout('layouts/boilerplate') %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Notifications</h2>
+  <% if (currentUser && ['admin'].includes(currentUser.user_type)) { %><a href="/notifications/broadcast" class="btn btn-primary"><i class="bi bi-megaphone me-1"></i>Broadcast</a><% } %>
+</div>
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#personal">My Notifications</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#broadcasts">Broadcasts</a></li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="personal">
+    <% if (typeof userNotifs !== 'undefined' && userNotifs.length > 0) { %>
+    <div class="list-group">
+      <% userNotifs.forEach(n => { %>
+      <div class="list-group-item list-group-item-action <%= n.is_read ? '' : 'list-group-item-light' %>">
+        <div class="d-flex justify-content-between">
+          <div><h6 class="mb-1"><%= n.title %></h6><p class="mb-1 text-muted"><%= n.message %></p></div>
+          <div class="text-end"><small class="text-muted"><%= n.created_at ? new Date(n.created_at).toLocaleString() : '' %></small>
+            <% if (!n.is_read) { %><br><form method="POST" action="/notifications/<%= n.id %>/read?_method=PUT" class="d-inline"><button class="btn btn-sm btn-outline-primary mt-1">Mark Read</button></form><% } %>
+          </div>
+        </div>
+      </div><% }); %>
+    </div>
+    <% } else { %><p class="text-center text-muted py-4">No notifications</p><% } %>
+  </div>
+  <div class="tab-pane fade" id="broadcasts">
+    <% if (typeof broadcasts !== 'undefined' && broadcasts.length > 0) { %>
+    <div class="list-group">
+      <% broadcasts.forEach(n => { %>
+      <div class="list-group-item">
+        <div class="d-flex justify-content-between">
+          <div><h6 class="mb-1"><%= n.title %></h6><p class="mb-1 text-muted"><%= n.message %></p><small class="text-muted">By: <%= n.sender_name || '' %></small></div>
+          <div class="text-end">
+            <small class="text-muted d-block"><%= n.created_at ? new Date(n.created_at).toLocaleString() : '' %></small>
+            <% if (currentUser && ['admin'].includes(currentUser.user_type)) { %>
+              <form method="POST" action="/notifications/broadcast/<%= n.id %>?_method=DELETE" class="d-inline" onsubmit="return confirm('Delete this broadcast?')">
+                <button class="btn btn-sm btn-outline-danger mt-1">Delete</button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      </div><% }); %>
+    </div>
+    <% } else { %><p class="text-center text-muted py-4">No broadcast notifications</p><% } %>
+  </div>
+</div>

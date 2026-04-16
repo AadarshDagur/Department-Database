@@ -1,0 +1,7 @@
+email,password,first_name,last_name,faculty_advisor_email,batch_year,batch_degree
+student2@gmail.com,12345678,Aarav,Sharma,abcd@gmail.com,2023,UG
+faculty2@gmail.com,12345678,Diya,Patel,2023,UG
+test4@gmail.com,12345678,Rohan,Verma,2023,UG
+faculty3@gmail.com,12345678,Ananya,Kumar,abcd@gmail.com,2023,UG
+test6@gmail.com,12345678,Arjun,Shukla,2023,PhD
+test7@gmail.com,12345678,Shreya,Singh,abcd@gmail.com,2023,PG

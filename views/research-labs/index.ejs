@@ -1,0 +1,30 @@
+<% layout('layouts/boilerplate') %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Research Labs</h2>
+  <% if (currentUser && ['admin','faculty'].includes(currentUser.user_type)) { %><a href="/research-labs/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Lab</a><% } %>
+</div>
+<form method="GET" class="row g-2 mb-4">
+  <div class="col-md-4"><input type="text" name="search" class="form-control" placeholder="Search..." value="<%= typeof search !== 'undefined' ? search : '' %>"></div>
+  <div class="col-md-3">
+    <select name="type" class="form-select"><option value="">All Types</option>
+      <% ['UG Lab','PG Lab','Research Lab'].forEach(t => { %><option value="<%= t %>" <%= typeof selectedType !== 'undefined' && selectedType === t ? 'selected' : '' %>><%= t %></option><% }); %>
+    </select>
+  </div>
+</form>
+<div class="row g-4">
+  <% if (typeof items !== 'undefined' && items.length > 0) { items.forEach(i => { %>
+  <div class="col-md-6 col-lg-4">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <h5 class="card-title"><%= i.name %></h5>
+        <span class="badge bg-info mb-2"><%= i.lab_type || '' %></span>
+        <% if (i.code) { %><p class="mb-1 text-muted small">Code: <%= i.code %></p><% } %>
+        <% if (i.head_name) { %><p class="mb-1"><strong>Head:</strong> <%= i.head_name %></p><% } %>
+        <% if (i.description) { %><p class="text-muted small"><%= i.description.substring(0, 120) %><%= i.description.length > 120 ? '...' : '' %></p><% } %>
+      </div>
+      <div class="card-footer bg-white border-0"><a href="/research-labs/<%= i.id %>" class="btn btn-sm btn-outline-primary">View Details</a></div>
+    </div>
+  </div>
+  <% }); } else { %><div class="col-12"><p class="text-center text-muted py-4">No research labs found</p></div><% } %>
+</div>
+<%- include('../partials/pagination') %>

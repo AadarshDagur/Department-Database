@@ -1,0 +1,77 @@
+<% layout('layouts/boilerplate') %>
+<div class="mb-3"><a href="/users" class="text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to Users</a></div>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white"><h3 class="mb-0"><%= user ? 'Edit User' : 'Add User' %></h3></div>
+  <div class="card-body">
+    <% const isEdit = !!user; const action = isEdit ? '/users/' + user.id + '?_method=PUT' : '/users'; %>
+    <form method="POST" action="<%= action %>">
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">First Name *</label><input type="text" name="first_name" class="form-control" value="<%= isEdit ? user.first_name : '' %>" required></div>
+        <div class="col-md-6"><label class="form-label">Last Name *</label><input type="text" name="last_name" class="form-control" value="<%= isEdit ? user.last_name : '' %>" required></div>
+        <div class="col-md-6"><label class="form-label">Email *</label><input type="email" name="email" class="form-control" value="<%= isEdit ? user.email : '' %>" required></div>
+        <div class="col-md-6"><label class="form-label">User Type *</label>
+          <select id="user_type" name="user_type" class="form-select" required>
+            <option value="">Select Type</option>
+            <option value="faculty" <%= isEdit && user.user_type === 'faculty' ? 'selected' : '' %>>Faculty</option>
+            <option value="admin" <%= isEdit && user.user_type === 'admin' ? 'selected' : '' %>>Admin</option>
+            <option value="student" <%= isEdit && ['student'].includes(user.user_type) ? 'selected' : '' %>>Student</option>
+          </select>
+        </div>
+        <% if (!isEdit) { %><div class="col-md-6"><label class="form-label">Password *</label><input type="password" name="password" class="form-control" required minlength="6"></div><% } %>
+<div class="col-md-6" id="advisorField" style="display:none;">
+          <label class="form-label" for="facultyAdvisorSearch">Faculty Advisor *</label>
+          <input type="search" id="facultyAdvisorSearch" class="form-control mb-2" placeholder="Search advisor by name..." data-filter-target="faculty_advisor_id" autocomplete="off">
+          <select name="faculty_advisor_id" id="faculty_advisor_id" class="form-select searchable-multiselect" size="5">
+            <option value="">Select Faculty Advisor</option>
+            <% if (typeof faculty !== 'undefined') { faculty.forEach(f => { %>  
+              <option value="<%= f.id %>" <%= studentDetails && studentDetails.faculty_advisor_id == f.id ? 'selected' : '' %>><%= f.first_name %> <%= f.last_name %> (<%= f.email %>)</option>
+            <% }); } %>
+          </select>
+        </div>
+        <div class="col-md-6" id="batchField" style="display:none;">
+          <label class="form-label">Batch *</label>
+          <select name="batch_id" id="batch_id" class="form-select">
+            <option value="">Select Batch</option>
+            <% if (typeof batches !== 'undefined') { batches.forEach(b => { %>  
+              <option value="<%= b.id %>" <%= studentDetails && studentDetails.batch_id == b.id ? 'selected' : '' %>><%= b.degree %> - <%= b.year %></option>
+            <% }); } %>
+          </select>
+        </div>
+        <div class="col-md-6"><label class="form-label">Phone</label><input type="text" name="phone" class="form-control" value="<%= isEdit ? (user.phone || '') : '' %>"></div>
+        <div class="col-12 mt-4">
+          <button type="submit" class="btn btn-primary me-2"><i class="bi bi-check-lg me-1"></i>Save</button>
+          <a href="/users" class="btn btn-light">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const typeEl = document.getElementById('user_type');
+    const advisorWrap = document.getElementById('advisorField');
+    const advisorSelect = document.getElementById('faculty_advisor_id');        
+    const batchWrap = document.getElementById('batchField');
+    const batchSelect = document.getElementById('batch_id');
+
+    function toggleAdvisorField() {
+      const isStudent = typeEl && typeEl.value === 'student';
+      advisorWrap.style.display = isStudent ? '' : 'none';
+      batchWrap.style.display = isStudent ? '' : 'none';
+      if (advisorSelect) {
+        advisorSelect.required = isStudent;
+        if (!isStudent) advisorSelect.value = '';
+      }
+      if (batchSelect) {
+        batchSelect.required = isStudent;
+        if (!isStudent) batchSelect.value = '';
+      }
+    }
+
+    if (typeEl) {
+      typeEl.addEventListener('change', toggleAdvisorField);
+      toggleAdvisorField();
+    }
+  })();
+</script>

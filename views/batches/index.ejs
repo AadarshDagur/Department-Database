@@ -1,0 +1,24 @@
+<% layout('layouts/boilerplate') %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Batches</h2>
+  <% if (currentUser && ['admin'].includes(currentUser.user_type)) { %><a href="/batches/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Batch</a><% } %>
+</div>
+<div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table table-hover mb-0">
+  <thead class="table-light"><tr><th>Batch</th><th>Degree</th><th>Year</th><th>Students</th><th>Actions</th></tr></thead>
+  <tbody>
+    <% const rows = typeof batches !== 'undefined' ? batches : (typeof items !== 'undefined' ? items : []); %>
+    <% if (rows.length > 0) { rows.forEach(i => { %>
+    <tr class="cursor-pointer" onclick="location.href='/batches/<%= i.id %>'">
+      <td class="fw-bold text-primary"><a href="/batches/<%= i.id %>" class="text-decoration-none"><%= 'CSE-' + i.degree + '-' + i.year %></a></td>
+      <td><span class="badge bg-secondary"><%= i.degree || 'UG' %></span></td>
+      <td><%= i.year || '' %></td>
+      <td><span class="badge bg-light text-dark shadow-sm"><%= i.student_count || 0 %> Students</span></td>
+      <td onclick="event.stopPropagation()">
+        <% if (currentUser && ['admin'].includes(currentUser.user_type)) { %>
+        <a href="/batches/<%= i.id %>/edit" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
+        <form method="POST" action="/batches/<%= i.id %>?_method=DELETE" class="d-inline" onsubmit="return confirm('Delete?')"><button class="btn btn-sm btn-outline-danger">Del</button></form>
+        <% } %>
+      </td>
+    </tr><% }); } else { %><tr><td colspan="5" class="text-center py-4 text-muted">No batches found</td></tr><% } %>
+  </tbody>
+</table></div></div>

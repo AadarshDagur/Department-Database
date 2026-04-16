@@ -1,0 +1,41 @@
+<% layout('layouts/boilerplate') %>
+<h2 class="mb-4">Reports</h2>
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#bog">BoG Report</a></li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="bog">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><h5 class="mb-0">Board of Governors Report</h5></div>
+      <div class="card-body">
+        <form method="GET" action="/reports/bog" class="row g-3 mb-4">
+          <div class="col-md-4"><label class="form-label">From Date</label><input type="date" name="from_date" class="form-control" value="<%= reportData && reportData.query ? (reportData.query.from_date || '') : '' %>"></div>
+          <div class="col-md-4"><label class="form-label">To Date</label><input type="date" name="to_date" class="form-control" value="<%= reportData && reportData.query ? (reportData.query.to_date || '') : '' %>"></div>
+          <div class="col-md-4 d-flex align-items-end"><button class="btn btn-primary">Generate</button></div>
+        </form>
+        <% if (reportData && reportData.type === 'BoG') { %>
+        <div class="row g-3 mb-4">
+          <div class="col-sm-2"><div class="card bg-primary bg-opacity-10 border-0 text-center p-3"><h3 class="text-primary mb-0"><%= reportData.publications.length %></h3><small>Publications</small></div></div>
+          <div class="col-sm-2"><div class="card bg-success bg-opacity-10 border-0 text-center p-3"><h3 class="text-success mb-0"><%= reportData.projects.length %></h3><small>Projects</small></div></div>
+          <div class="col-sm-2"><div class="card bg-info bg-opacity-10 border-0 text-center p-3"><h3 class="text-info mb-0"><%= reportData.events.length %></h3><small>Events</small></div></div>
+          <div class="col-sm-2"><div class="card bg-warning bg-opacity-10 border-0 text-center p-3"><h3 class="text-warning mb-0"><%= reportData.achievements.length %></h3><small>Achievements</small></div></div>
+          <div class="col-sm-2"><div class="card bg-danger bg-opacity-10 border-0 text-center p-3"><h3 class="text-danger mb-0"><%= reportData.visits.length %></h3><small>Visits</small></div></div>
+        </div>
+        <% const allItems = [
+          ...reportData.publications.map(i => ({...i, category: 'Publication'})),
+          ...reportData.projects.map(i => ({...i, category: 'Project'})),
+          ...reportData.events.map(i => ({...i, category: 'Event'})),
+          ...reportData.achievements.map(i => ({...i, category: 'Achievement'})),
+          ...reportData.visits.map(i => ({...i, category: 'Visit'}))
+        ].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)); %>
+        <% if (allItems.length > 0) { %>
+        <div class="table-responsive"><table class="table table-striped">
+          <thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Created By</th></tr></thead>
+          <tbody><% allItems.forEach(i => { %><tr><td><%= i.title %></td><td><span class="badge bg-secondary"><%= i.category %></span></td><td><%= i.created_date ? new Date(i.created_date).toLocaleDateString() : '' %></td><td><%= i.creator_name || '' %></td></tr><% }); %></tbody>
+        </table></div>
+        <% } else { %><p class="text-muted text-center py-3">No records found for the selected period.</p><% } %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

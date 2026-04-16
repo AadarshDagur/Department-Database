@@ -1,0 +1,55 @@
+<% layout('layouts/boilerplate') %>
+<div class="mb-3"><a href="/projects" class="text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to Projects</a></div>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <h3 class="mb-0"><%= item.title %></h3>
+    <span class="badge bg-<%= item.status === 'Ongoing' ? 'primary' : item.status === 'Completed' ? 'success' : 'secondary' %>"><%= item.status %></span>
+  </div>
+  <div class="card-body">
+    <div class="row g-4">
+      <div class="col-md-8">
+        <% if (item.description) { %><h5>Description</h5><p><%= item.description %></p><% } %>
+        <div class="row g-3">
+          <% if (item.code) { %><div class="col-sm-6"><strong>Code:</strong> <code><%= item.code %></code></div><% } %>
+          <% if (item.investment) { %><div class="col-sm-6"><strong>Investment:</strong> ₹<%= Number(item.investment).toLocaleString() %></div><% } %>
+          <% if (item.start_date) { %><div class="col-sm-6"><strong>Start:</strong> <%= new Date(item.start_date).toLocaleDateString() %></div><% } %>
+          <% if (item.end_date) { %><div class="col-sm-6"><strong>End:</strong> <%= new Date(item.end_date).toLocaleDateString() %></div><% } %>
+          <% if (item.url) { %><div class="col-12"><strong>URL:</strong> <a href="<%= item.url %>" target="_blank"><%= item.url %></a></div><% } %>
+        </div>
+        <% if (item.members && item.members.length > 0) { %><h5 class="mt-4">Members</h5><div class="d-flex flex-wrap gap-2"><% item.members.forEach(m => { %><span class="badge bg-light text-dark border"><%= m.first_name %> <%= m.last_name %></span><% }); %></div><% } %>
+      </div>
+      <div class="col-md-4">
+        <div class="card bg-light border-0"><div class="card-body">
+          <p class="mb-1"><strong>Created by:</strong> <%= item.creator_name || 'Unknown' %></p>
+          <p class="mb-1"><strong>Created:</strong> <%= item.created_date ? new Date(item.created_date).toLocaleString() : 'N/A' %></p>
+        </div></div>
+        
+        <% if (currentUser && ['faculty', 'admin'].includes(currentUser.user_type) && item.object_type === 'P') { %>
+        <div class="card mt-3 border-warning">
+          <div class="card-header bg-warning bg-opacity-10 text-warning-emphasis"><strong><i class="bi bi-exclamation-triangle me-2"></i>Pending Approval</strong></div>
+          <div class="card-body">
+            <p class="small text-muted mb-3">This submission requires review.</p>
+            <div class="d-flex flex-column gap-2">
+              <form method="POST" action="/projects/<%= item.id %>/approve?_method=PUT">
+                <button class="btn btn-success w-100"><i class="bi bi-check-lg me-2"></i>Approve</button>
+              </form>
+              <form method="POST" action="/projects/<%= item.id %>/reject?_method=PUT">
+                <button class="btn btn-danger w-100"><i class="bi bi-x-lg me-2"></i>Reject</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <% } %>
+
+        <% if (currentUser && (item.created_by === currentUser.id || ['admin'].includes(currentUser.user_type))) { %>
+        <div class="d-grid gap-2 mt-3">
+          <% if (!item.is_deleted) { %>
+            <a href="/projects/<%= item.id %>/edit" class="btn btn-outline-primary"><i class="bi bi-pencil me-2"></i>Edit</a>
+            <form method="POST" action="/projects/<%= item.id %>?_method=DELETE" onsubmit="return confirm('Delete?')"><button class="btn btn-outline-danger w-100"><i class="bi bi-trash me-2"></i>Delete</button></form>
+          <% } else { %><form method="POST" action="/projects/<%= item.id %>/restore?_method=PUT"><button class="btn btn-outline-success w-100"><i class="bi bi-arrow-counterclockwise me-2"></i>Restore</button></form><% } %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

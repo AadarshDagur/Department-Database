@@ -1,0 +1,26 @@
+<% layout('layouts/boilerplate') %>
+<div class="mb-3"><a href="/research-labs" class="text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to Research Labs</a></div>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white d-flex justify-content-between"><h3 class="mb-0"><%= item.name %></h3><span class="badge bg-info"><%= item.lab_type || '' %></span></div>
+  <div class="card-body"><div class="row g-4">
+    <div class="col-md-8">
+      <% if (item.description) { %><h5>Description</h5><p><%= item.description %></p><% } %>
+      <div class="row g-3">
+        <% if (item.code) { %><div class="col-sm-6"><strong>Code:</strong> <%= item.code %></div><% } %>
+        <% if (item.head_name) { %><div class="col-sm-6"><strong>Head:</strong> <%= item.head_name %></div><% } %>
+        <% if (item.equipment) { %><div class="col-12"><strong>Equipment:</strong> <%= item.equipment %></div><% } %>
+        <% if (item.website) { %><div class="col-12"><strong>Website:</strong> <a href="<%= item.website %>" target="_blank"><%= item.website %></a></div><% } %>
+        <% if (item.address) { %><div class="col-12"><strong>Address:</strong> <%= item.address %></div><% } %>
+      </div>
+      <% if (item.members && item.members.length > 0) { %><h5 class="mt-4">Members</h5><div class="d-flex flex-wrap gap-2"><% item.members.forEach(m => { %><span class="badge bg-light text-dark border"><%= m.first_name %> <%= m.last_name %></span><% }); %></div><% } %>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-light border-0"><div class="card-body"><p class="mb-1"><strong>Created by:</strong> <%= item.creator_name || 'Unknown' %></p><p class="mb-0"><strong>Created:</strong> <%= item.created_date ? new Date(item.created_date).toLocaleString() : '' %></p></div></div>
+      <% if (currentUser && ['admin','faculty'].includes(currentUser.user_type)) { %>
+      <div class="d-grid gap-2 mt-3">
+        <a href="/research-labs/<%= item.id %>/edit" class="btn btn-outline-primary"><i class="bi bi-pencil me-2"></i>Edit</a>
+        <form method="POST" action="/research-labs/<%= item.id %>?_method=DELETE" onsubmit="return confirm('Delete this lab?')"><button class="btn btn-outline-danger w-100"><i class="bi bi-trash me-2"></i>Delete</button></form>
+      </div><% } %>
+    </div>
+  </div></div>
+</div>

@@ -1,0 +1,36 @@
+<% layout('layouts/boilerplate') %>
+<div class="page-header">
+  <div>
+    <h2 class="mb-1"><i class="bi bi-calendar-event me-2"></i>Events</h2>
+    <p class="text-muted mb-0">Browse institutional events</p>
+  </div>
+  <% if (currentUser) { %>
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="/events/my" class="btn btn-outline-primary">My Events</a>
+      <a href="/events/drafts" class="btn btn-outline-secondary">Drafts</a>
+      <button class="action-btn" data-bs-toggle="modal" data-bs-target="#csvUploadModal"><i class="bi bi-upload me-1"></i>CSV Upload</button>
+      <a href="/events/new" class="action-btn action-btn-primary"><i class="bi bi-plus-lg me-1"></i>New</a>
+    </div>
+  <% } %>
+</div>
+<div class="filter-bar"><form class="row g-2" method="GET">
+  <div class="col-md-5"><input type="text" class="form-control" name="search" placeholder="Search..." value="<%= query.search || '' %>"></div>
+  <div class="col-md-3"><select class="form-select" name="type"><option value="">All Types</option><% ['Workshop','Conference','Seminar','Invited Lecture'].forEach(t => { %><option value="<%= t %>" <%= query.type === t ? 'selected' : '' %>><%= t %></option><% }); %></select></div>
+  <div class="col-md-2"><a href="/events" class="btn btn-outline-secondary w-100">Clear</a></div>
+</form></div>
+<div class="table-container"><div class="table-responsive"><table class="table table-hover align-middle mb-0">
+  <thead><tr><th>Title</th><th>Type</th><th>Date</th><th>Venue</th><th>Created By</th><th></th></tr></thead>
+  <tbody>
+    <% if (items.length === 0) { %><tr><td colspan="6" class="text-center py-5"><div class="empty-state"><i class="bi bi-calendar-event"></i><p>No events found</p></div></td></tr><% } %>
+    <% items.forEach(item => { %><tr>
+      <td><a href="/events/<%= item.id %>" class="text-decoration-none fw-medium" style="color: var(--iit-blue);"><%= item.title %></a></td>
+      <td><span class="badge badge-type"><%= item.event_type %></span></td>
+      <td class="text-muted"><%= item.start_date ? new Date(item.start_date).toLocaleDateString() : '' %></td>
+      <td class="text-muted"><%= item.venue || '' %></td>
+      <td class="text-muted"><%= item.creator_name || '' %></td>
+      <td><a href="/events/<%= item.id %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></td>
+    </tr><% }); %>
+  </tbody>
+</table></div></div>
+<%- include('../partials/pagination') %>
+<%- include('../partials/csv-upload-modal', { entityType: 'events', sampleFields: 'title, description, event_type, speakers, participant_count, start_date, end_date, venue, url, organizers' }) %>

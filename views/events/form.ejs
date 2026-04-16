@@ -1,0 +1,40 @@
+<% layout('layouts/boilerplate') %>
+<div class="mb-3"><a href="/events/my" class="text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to My Events</a></div>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white"><h3 class="mb-0"><%= item ? 'Edit Event' : 'Add Event' %></h3></div>
+  <div class="card-body">
+    <% const isEdit = !!item; const action = isEdit ? '/events/' + item.id + '?_method=PUT' : '/events'; %>
+    <form method="POST" action="<%= action %>">
+      <div class="row g-3">
+        <div class="col-md-8"><label class="form-label">Title *</label><input type="text" name="title" class="form-control" value="<%= isEdit ? item.title : '' %>" required></div>
+        <div class="col-md-4"><label class="form-label">Event Type *</label>
+          <select name="event_type" class="form-select" required>
+            <option value="">Select Type</option>
+            <% ['Workshop','Conference','Seminar','Invited Lecture','FDP','Webinar','Symposium','Other'].forEach(t => { %>
+            <option value="<%= t %>" <%= isEdit && item.event_type === t ? 'selected' : '' %>><%= t %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-12"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="4"><%= isEdit ? (item.description || '') : '' %></textarea></div>
+        <div class="col-md-6"><label class="form-label">Speakers</label><input type="text" name="speakers" class="form-control" value="<%= isEdit ? (item.speakers || '') : '' %>"></div>
+        <div class="col-md-6"><label class="form-label">Participant Count</label><input type="number" name="participant_count" class="form-control" value="<%= isEdit ? (item.participant_count || '') : '' %>"></div>
+        <div class="col-md-6"><label class="form-label">Start Date</label><input type="date" name="start_date" class="form-control" value="<%= isEdit && item.start_date ? new Date(item.start_date).toISOString().split('T')[0] : '' %>"></div>
+        <div class="col-md-6"><label class="form-label">End Date</label><input type="date" name="end_date" class="form-control" value="<%= isEdit && item.end_date ? new Date(item.end_date).toISOString().split('T')[0] : '' %>"></div>
+        <div class="col-md-6"><label class="form-label">Venue</label><input type="text" name="venue" class="form-control" value="<%= isEdit ? (item.venue || '') : '' %>"></div>
+        <div class="col-md-6"><label class="form-label">URL</label><input type="url" name="url" class="form-control" value="<%= isEdit ? (item.url || '') : '' %>"></div>
+        <div class="col-md-6"><label class="form-label" for="organizersSearch">Organizers</label>      
+          <input type="search" id="organizersSearch" class="form-control mb-2" placeholder="Search organizers by name..." data-filter-target="organizersSelect" autocomplete="off">
+          <select id="organizersSelect" name="members" class="form-select searchable-multiselect" multiple size="5">
+            <% if (typeof users !== 'undefined') { users.forEach(u => { %><option value="<%= u.id %>" <%= isEdit && item.memberIds && item.memberIds.includes(u.id) ? 'selected' : '' %>><%= u.first_name %> <%= u.last_name %></option><% }); } %>
+          </select><small class="text-muted">Type to filter, hold Ctrl/Cmd to select multiple</small>
+        </div>
+        </div>
+        <div class="col-12 mt-4">
+          <button type="submit" name="is_draft" value="false" class="btn btn-primary me-2"><i class="bi bi-check-lg me-1"></i>Save</button>
+          <button type="submit" name="is_draft" value="true" class="btn btn-outline-secondary me-2"><i class="bi bi-file-earmark me-1"></i>Save as Draft</button>
+          <a href="/events/my" class="btn btn-light">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

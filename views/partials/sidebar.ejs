@@ -1,0 +1,68 @@
+<% 
+const userType = currentUser.user_type;
+const isStudent = ['student'].includes(userType);
+const isFaculty = userType === 'faculty';
+const isAdmin = userType === 'admin';
+const isFacultyOrAbove = isFaculty || isAdmin;
+const queryHref = isAdmin ? '/queries' : '/queries/new';
+
+const sections = [
+  {
+    label: 'Main',
+    items: [
+      { href: '/dashboard', icon: 'bi-speedometer2', label: 'Dashboard', show: true },
+    ]
+  },
+  {
+    label: 'Academic',
+    items: [
+      { href: '/publications', icon: 'bi-journal-text', label: 'Publications', show: true },
+      { href: '/projects', icon: 'bi-folder2-open', label: 'Projects', show: isFacultyOrAbove },
+      { href: '/student-projects', icon: 'bi-mortarboard', label: 'Student Projects', show: true },
+      { href: '/research-labs', icon: 'bi-pc-display', label: 'Research Labs', show: true },
+    ]
+  },
+  {
+    label: 'Activities',
+    items: [
+      { href: '/events', icon: 'bi-calendar-event', label: 'Events', show: true },
+      { href: '/achievements', icon: 'bi-trophy', label: 'Achievements', show: true },
+      { href: '/visits', icon: 'bi-airplane', label: 'Visits', show: true },
+    ]
+  },
+  {
+    label: 'Administration',
+    items: [
+      { href: '/approvals', icon: 'bi-check2-square', label: 'Approvals', show: isFaculty },
+      { href: '/batches', icon: 'bi-people', label: 'Batches', show: isAdmin },
+      { href: '/users', icon: 'bi-person-gear', label: 'Users', show: isAdmin },
+      { href: '/reports', icon: 'bi-file-earmark-bar-graph', label: 'Reports', show: isAdmin },
+    ]
+  },
+  {
+    label: 'Support',
+    items: [
+      { href: '/notifications', icon: 'bi-bell', label: 'Notifications', show: true },
+      { href: queryHref, icon: 'bi-question-circle', label: 'Contact / Issues', show: true },
+    ]
+  }
+];
+
+const currentPath = '/' + (typeof currentPage !== 'undefined' ? currentPage : '');
+%>
+<aside class="sidebar" id="sidebar">
+  <nav>
+    <% sections.forEach(section => { %>
+      <% const visibleItems = section.items.filter(i => i.show); %>
+      <% if (visibleItems.length > 0) { %>
+        <p class="sidebar-section-label"><%= section.label %></p>
+        <% visibleItems.forEach(item => { %>
+          <a href="<%= item.href %>" class="sidebar-link <%= currentPath === item.href ? 'active' : '' %>">
+            <i class="bi <%= item.icon %>"></i>
+            <span><%= item.label %></span>
+          </a>
+        <% }); %>
+      <% } %>
+    <% }); %>
+  </nav>
+</aside>

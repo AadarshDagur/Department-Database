@@ -1,0 +1,35 @@
+<% layout('layouts/boilerplate') %>
+<div class="mb-3"><a href="/achievements/my" class="text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to My Achievements</a></div>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white"><h3 class="mb-0"><%= item ? 'Edit Achievement' : 'Add Achievement' %></h3></div>
+  <div class="card-body">
+    <% const isEdit = !!item; const action = isEdit ? '/achievements/' + item.id + '?_method=PUT' : '/achievements'; %>
+    <form method="POST" action="<%= action %>">
+      <div class="row g-3">
+        <div class="col-md-8"><label class="form-label">Title *</label><input type="text" name="title" class="form-control" value="<%= isEdit ? item.title : '' %>" required></div>
+        <div class="col-md-4"><label class="form-label">Achievement Type *</label>
+          <select name="achievement_type" class="form-select" required><option value="">Select Type</option>
+            <% ['Hackathon','Competition','Internship'].forEach(t => { %><option value="<%= t %>" <%= isEdit && item.achievement_type === t ? 'selected' : '' %>><%= t %></option><% }); %>
+          </select>
+        </div>
+        <div class="col-12"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="4"><%= isEdit ? (item.description || '') : '' %></textarea></div>
+        <div class="col-md-4"><label class="form-label">Position</label><input type="text" name="position" class="form-control" value="<%= isEdit ? (item.position || '') : '' %>" placeholder="e.g. 1st, 2nd"></div>
+        <div class="col-md-4"><label class="form-label">Event Name</label><input type="text" name="event_name" class="form-control" value="<%= isEdit ? (item.event_name || '') : '' %>"></div>
+        <div class="col-md-4"><label class="form-label">Event Date</label><input type="date" name="event_date" class="form-control" value="<%= isEdit && item.event_date ? new Date(item.event_date).toISOString().split('T')[0] : '' %>"></div>
+        <div class="col-md-6"><label class="form-label">Participants</label><input type="text" name="participants" class="form-control" value="<%= isEdit ? (item.participants || '') : '' %>"></div>
+        <div class="col-md-6"><label class="form-label" for="membersSearch">Members</label>
+          <input type="search" id="membersSearch" class="form-control mb-2" placeholder="Search members by name..." data-filter-target="membersSelect" autocomplete="off">
+          <select id="membersSelect" name="members" class="form-select searchable-multiselect" multiple size="5">
+            <% if (typeof users !== 'undefined') { users.forEach(u => { %><option value="<%= u.id %>" <%= isEdit && item.memberIds && item.memberIds.includes(u.id) ? 'selected' : '' %>><%= u.first_name %> <%= u.last_name %></option><% }); } %>
+          </select><small class="text-muted">Type to filter, hold Ctrl/Cmd to select multiple</small>
+        </div>
+        </div>
+        <div class="col-12 mt-4">
+          <button type="submit" name="is_draft" value="false" class="btn btn-primary me-2"><i class="bi bi-check-lg me-1"></i>Save</button>
+          <button type="submit" name="is_draft" value="true" class="btn btn-outline-secondary me-2"><i class="bi bi-file-earmark me-1"></i>Save as Draft</button>
+          <a href="/achievements/my" class="btn btn-light">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

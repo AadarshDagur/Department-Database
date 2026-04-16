@@ -1,0 +1,37 @@
+<% layout('layouts/boilerplate') %>
+<div class="page-header">
+  <div>
+    <h2 class="mb-1"><i class="bi bi-trophy me-2"></i>Achievements</h2>
+    <p class="text-muted mb-0">Browse awards and recognitions</p>
+  </div>
+  <% if (currentUser) { %>
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="/achievements/my" class="action-btn">My Achievements</a>      <a href="/achievements/drafts" class="btn btn-outline-secondary">Drafts</a>      <button class="action-btn" data-bs-toggle="modal" data-bs-target="#csvUploadModal"><i class="bi bi-upload me-1"></i>CSV Upload</button>
+      <a href="/achievements/new" class="action-btn action-btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Achievement</a>
+    </div>
+  <% } %>
+</div>
+<div class="filter-bar">
+  <form method="GET" class="row g-2">
+    <div class="col-md-5"><input type="text" name="search" class="form-control" placeholder="Search..." value="<%= typeof search !== 'undefined' ? search : '' %>"></div>
+    <div class="col-md-3">
+      <select name="type" class="form-select"><option value="">All Types</option>
+        <% ['Hackathon','Competition','Internship'].forEach(t => { %><option value="<%= t %>" <%= typeof selectedType !== 'undefined' && selectedType === t ? 'selected' : '' %>><%= t %></option><% }); %>
+      </select>
+    </div>
+    <div class="col-md-2"><a href="/achievements" class="btn btn-outline-secondary w-100">Clear</a></div>
+  </form>
+</div>
+<div class="table-container">
+  <div class="table-responsive"><table class="table table-hover mb-0">
+    <thead><tr><th>Title</th><th>Type</th><th>Position</th><th>Event</th><th>Date</th><th>Created By</th></tr></thead>
+    <tbody>
+      <% if (typeof items !== 'undefined' && items.length > 0) { items.forEach(i => { %>
+      <tr class="cursor-pointer" onclick="location.href='/achievements/<%= i.id %>'">
+        <td style="color: var(--iit-blue); font-weight: 500;"><%= i.title %></td><td><span class="badge badge-type"><%= i.achievement_type || '' %></span></td><td><%= i.position || '' %></td><td><%= i.event_name || '' %></td><td><%= i.event_date ? new Date(i.event_date).toLocaleDateString() : '' %></td><td class="text-muted"><%= i.creator_name || '' %></td>
+      </tr><% }); } else { %><tr><td colspan="6" class="text-center py-5"><div class="empty-state"><i class="bi bi-trophy"></i><p>No achievements found</p></div></td></tr><% } %>
+    </tbody>
+  </table></div>
+</div>
+<%- include('../partials/pagination') %>
+<%- include('../partials/csv-upload-modal', { entityType: 'achievements', sampleFields: 'title, description, achievement_type, position, event_name, event_date, url, participants' }) %>

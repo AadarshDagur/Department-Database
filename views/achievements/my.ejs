@@ -1,0 +1,41 @@
+<% layout('layouts/boilerplate') %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>My Achievements</h2>
+  <a href="/achievements/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Achievement</a>
+</div>
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item"><a class="nav-link <%= tab === 'active' ? 'active' : '' %>" href="/achievements/my">Active</a></li>
+  <li class="nav-item"><a class="nav-link <%= tab === 'drafts' ? 'active' : '' %>" href="/achievements/drafts">Drafts</a></li>
+  <li class="nav-item"><a class="nav-link <%= tab === 'pending' ? 'active' : '' %>" href="/achievements/pending">Pending</a></li>
+  <li class="nav-item"><a class="nav-link <%= tab === 'deleted' ? 'active' : '' %>" href="/achievements/deleted">Deleted</a></li>
+</ul>
+<div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table table-hover mb-0">
+  <thead class="table-light"><tr><th>Title</th><th>Type</th><th>Position</th><th>Date</th><th>Actions</th></tr></thead>
+  <tbody>
+    <% if (items.length === 0) { %>
+      <tr><td colspan="5" class="text-center py-4 text-muted">No items found</td></tr>
+    <% } %>
+    <% items.forEach(i => { %>
+    <tr>
+      <td><%= i.title %></td>
+      <td><%= i.achievement_type || '' %></td>
+      <td><%= i.position || '' %></td>
+      <td><%= i.event_date ? new Date(i.event_date).toLocaleDateString() : '' %></td>
+      <td>
+        <div class="btn-group btn-group-sm">
+          <a href="/achievements/<%= i.id %>" class="btn btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+          <% if (tab === 'active' || tab === 'drafts') { %><a href="/achievements/<%= i.id %>/edit" class="btn btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a><% } %>
+          <% if (tab === 'drafts') { %><form method="POST" action="/achievements/<%= i.id %>/submit?_method=PUT" class="d-inline"><button class="btn btn-outline-success btn-sm" title="Submit"><i class="bi bi-send"></i></button></form><% } %>
+          <% if (tab === 'pending' && ['faculty'].includes(currentUser.user_type)) { %>
+            <form method="POST" action="/achievements/<%= i.id %>/approve?_method=PUT" class="d-inline"><button class="btn btn-outline-success btn-sm" title="Approve"><i class="bi bi-check-lg"></i></button></form>
+            <form method="POST" action="/achievements/<%= i.id %>/reject?_method=PUT" class="d-inline"><button class="btn btn-outline-danger btn-sm" title="Reject"><i class="bi bi-x-lg"></i></button></form>
+          <% } %>
+          <% if (tab !== 'deleted' && !i.is_draft) { %><form method="POST" action="/achievements/<%= i.id %>?_method=DELETE" class="d-inline" onsubmit="return confirm('Delete?')"><button class="btn btn-outline-danger btn-sm" title="Delete"><i class="bi bi-trash"></i></button></form><% } %>   
+          <% if (tab === 'deleted') { %><form method="POST" action="/achievements/<%= i.id %>/restore?_method=PUT" class="d-inline"><button class="btn btn-outline-info btn-sm" title="Restore"><i class="bi bi-arrow-counterclockwise"></i></button></form><% } %>
+        </div>
+      </td>
+    </tr>
+    <% }); %>
+  </tbody>
+</table></div></div>
+<%- include('../partials/pagination') %>

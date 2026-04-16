@@ -1,0 +1,36 @@
+<% layout('layouts/boilerplate') %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Student Projects</h2>
+  <div class="d-flex gap-2">
+    <% if (currentUser) { %>
+    <a href="/student-projects/my" class="btn btn-outline-primary">My Projects</a>
+    <a href="/student-projects/drafts" class="btn btn-outline-secondary">Drafts</a>
+    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#csvUploadModal"><i class="bi bi-upload me-1"></i>CSV Upload</button>
+    <a href="/student-projects/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Project</a>
+    <% } %>
+  </div>
+</div>
+<form method="GET" class="row g-2 mb-4">
+  <div class="col-md-4"><input type="text" name="search" class="form-control" placeholder="Search..." value="<%= typeof search !== 'undefined' ? search : '' %>"></div>
+  <div class="col-md-3">
+    <select name="status" class="form-select"><option value="">All Status</option>
+      <% ['Ongoing','Completed','Cancelled'].forEach(t => { %><option value="<%= t %>" <%= typeof selectedStatus !== 'undefined' && selectedStatus === t ? 'selected' : '' %>><%= t %></option><% }); %>
+    </select>
+  </div>
+</form>
+<div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table table-hover mb-0">
+  <thead class="table-light"><tr><th>Title</th><th>Status</th><th>Mentor</th><th>Start</th><th>End</th><th>Created By</th></tr></thead>
+  <tbody>
+    <% if (typeof items !== 'undefined' && items.length > 0) { items.forEach(i => { %>
+    <tr class="cursor-pointer" onclick="location.href='/student-projects/<%= i.id %>'">
+      <td><%= i.title %></td>
+      <td><span class="badge bg-<%= i.status === 'Completed' ? 'success' : i.status === 'Ongoing' ? 'primary' : 'secondary' %>"><%= i.status || '' %></span></td>
+      <td><%= i.mentor_name || '' %></td>
+      <td><%= i.start_date ? new Date(i.start_date).toLocaleDateString() : '' %></td>
+      <td><%= i.end_date ? new Date(i.end_date).toLocaleDateString() : '' %></td>
+      <td><%= i.creator_name || '' %></td>
+    </tr><% }); } else { %><tr><td colspan="6" class="text-center py-4 text-muted">No student projects found</td></tr><% } %>
+  </tbody>
+</table></div></div>
+<%- include('../partials/pagination') %>
+<%- include('../partials/csv-upload-modal', { entityType: 'student-projects', sampleFields: 'title, description, status, start_date, end_date, url, members' }) %>

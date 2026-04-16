@@ -1,0 +1,22 @@
+<% if (pagination && pagination.totalPages > 1) { %>
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    <li class="page-item <%= !pagination.hasPrev ? 'disabled' : '' %>">
+      <a class="page-link" href="?page=<%= pagination.page - 1 %>&<%= typeof query !== 'undefined' && query.search ? 'search=' + query.search + '&' : '' %><%= typeof query !== 'undefined' && query.type ? 'type=' + query.type : '' %>">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+    </li>
+    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+      <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
+        <a class="page-link" href="?page=<%= i %>&<%= typeof query !== 'undefined' && query.search ? 'search=' + query.search + '&' : '' %><%= typeof query !== 'undefined' && query.type ? 'type=' + query.type : '' %>"><%= i %></a>
+      </li>
+    <% } %>
+    <li class="page-item <%= !pagination.hasNext ? 'disabled' : '' %>">
+      <a class="page-link" href="?page=<%= pagination.page + 1 %>&<%= typeof query !== 'undefined' && query.search ? 'search=' + query.search + '&' : '' %><%= typeof query !== 'undefined' && query.type ? 'type=' + query.type : '' %>">
+        <i class="bi bi-chevron-right"></i>
+      </a>
+    </li>
+  </ul>
+  <p class="text-center text-muted small">Showing page <%= pagination.page %> of <%= pagination.totalPages %> (<%= pagination.total %> total)</p>
+</nav>
+<% } %>

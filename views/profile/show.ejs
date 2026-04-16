@@ -1,0 +1,65 @@
+<% layout('layouts/boilerplate') %>
+<div class="page-header">
+  <div>
+    <h2 class="mb-1"><i class="bi bi-person-badge me-2"></i>Profile</h2>
+    <p class="text-muted mb-0">User details and recent activity</p>
+  </div>
+  <a href="/profile" class="action-btn"><i class="bi bi-arrow-left me-1"></i>Back to Directory</a>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card profile-side-card">
+      <div class="card-body text-center">
+        <div class="mx-auto mb-3">
+          <img src="<%= item.profile_image || '/img/default.png' %>" onerror="this.src='/img/default.png'" alt="Profile Default" class="rounded-circle object-fit-cover shadow-sm bg-white" style="width: 120px; height: 120px; border: 4px solid #fff;">
+        </div>
+        <h4 class="mb-1"><%= item.first_name %> <%= item.last_name %></h4>
+        <span class="badge badge-status-draft"><%= formatUserType(item.user_type) %></span>
+        
+        <% if (currentUser && currentUser.id === item.id) { %>
+          <a href="/profile/<%= item.id %>/edit" class="btn btn-outline-primary mt-3 w-100"><i class="bi bi-pencil me-1"></i>Edit Profile</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card mb-4">
+      <div class="card-header"><h5 class="mb-0">Contact Information</h5></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-sm-6"><span class="detail-label">Email</span><div class="detail-value"><%= item.email %></div></div>
+          
+        </div>
+      </div>
+    </div>
+
+    <% if (typeof details !== 'undefined' && details) { %>
+      <div class="card mb-4">
+        <div class="card-header"><h5 class="mb-0">Additional Details</h5></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <% Object.entries(details).forEach(([key, val]) => { if (val && !['id','user_id'].includes(key)) { %>
+              <div class="col-sm-6"><span class="detail-label"><%= key.replace(/_/g,' ').replace(/\b\w/g, l => l.toUpperCase()) %></span><div class="detail-value"><%= val %></div></div>
+            <% }}); %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (typeof recentItems !== 'undefined' && recentItems.length > 0) { %>
+      <div class="card">
+        <div class="card-header"><h5 class="mb-0">Recent Activity</h5></div>
+        <div class="list-group list-group-flush">
+          <% recentItems.forEach(r => { %>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <div><span class="badge badge-type me-2"><%= r.category %></span><span><%= r.title %></span></div>
+              <small class="text-muted"><%= r.created_date ? new Date(r.created_date).toLocaleDateString() : '' %></small>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>

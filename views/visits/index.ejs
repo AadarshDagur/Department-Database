@@ -1,0 +1,31 @@
+<% layout('layouts/boilerplate') %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Visits</h2>
+  <div class="d-flex gap-2">
+    <% if (currentUser) { %>
+    <a href="/visits/my" class="btn btn-outline-primary">My Visits</a>
+    <a href="/visits/drafts" class="btn btn-outline-secondary">Drafts</a>
+    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#csvUploadModal"><i class="bi bi-upload me-1"></i>CSV Upload</button>
+    <a href="/visits/new" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Visit</a>
+    <% } %>
+  </div>
+</div>
+<form method="GET" class="row g-2 mb-4">
+  <div class="col-md-4"><input type="text" name="search" class="form-control" placeholder="Search..." value="<%= typeof search !== 'undefined' ? search : '' %>"></div>
+  <div class="col-md-3">
+    <select name="type" class="form-select"><option value="">All Types</option>
+      <% ['Lecture','Conference','Seminar'].forEach(t => { %><option value="<%= t %>" <%= typeof selectedType !== 'undefined' && selectedType === t ? 'selected' : '' %>><%= t %></option><% }); %>
+    </select>
+  </div>
+</form>
+<div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table table-hover mb-0">
+  <thead class="table-light"><tr><th>Title</th><th>Type</th><th>Institution</th><th>From</th><th>To</th><th>Created By</th></tr></thead>
+  <tbody>
+    <% if (typeof items !== 'undefined' && items.length > 0) { items.forEach(i => { %>
+    <tr class="cursor-pointer" onclick="location.href='/visits/<%= i.id %>'">
+      <td><%= i.title %></td><td><span class="badge bg-success"><%= i.visit_type || '' %></span></td><td><%= i.institution || '' %></td><td><%= i.from_date ? new Date(i.from_date).toLocaleDateString() : '' %></td><td><%= i.to_date ? new Date(i.to_date).toLocaleDateString() : '' %></td><td><%= i.creator_name || '' %></td>
+    </tr><% }); } else { %><tr><td colspan="6" class="text-center py-4 text-muted">No visits found</td></tr><% } %>
+  </tbody>
+</table></div></div>
+<%- include('../partials/pagination') %>
+<%- include('../partials/csv-upload-modal', { entityType: 'visits', sampleFields: 'title, description, visit_type, institution, from_date, to_date, url' }) %>

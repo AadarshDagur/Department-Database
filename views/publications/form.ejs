@@ -1,0 +1,121 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="mb-3">
+  <a href="/publications" class="text-decoration-none" style="color: var(--iit-blue);"><i class="bi bi-arrow-left me-1"></i>Back to Publications</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white">
+    <h3 class="mb-0"><%= item ? 'Edit Publication' : 'New Publication' %></h3>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="<%= item ? '/publications/' + item.id + '?_method=PUT' : '/publications' %>">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label">Title *</label>
+          <input type="text" class="form-control" name="title" value="<%= item ? item.title : '' %>" required>
+        </div>
+        
+        <div class="col-md-6">
+          <label class="form-label">Publication Type *</label>
+          <select class="form-select" name="publication_type" required>
+            <% typeChoices.forEach(t => { %>
+              <option value="<%= t %>" <%= item && item.publication_type === t ? 'selected' : '' %>><%= t %></option>
+            <% }) %>
+          </select>
+        </div>
+        
+        <div class="col-md-6">
+          <label class="form-label">Status *</label>
+          <select class="form-select" name="status" required>
+            <% statusChoices.forEach(s => { %>
+              <option value="<%= s %>" <%= item && item.status === s ? 'selected' : '' %>><%= s %></option>
+            <% }) %>
+          </select>
+        </div>
+        
+        <div class="col-12">
+          <label class="form-label">Authors</label>
+          <select class="form-select" name="members" multiple size="5">
+             <% if (typeof users !== 'undefined') { %>
+               <% users.forEach(u => { %>
+                 <option value="<%= u.id %>" <%= item && item.members && item.members.some(m => m.id === u.id) ? 'selected' : '' %>>
+                   <%= u.first_name %> <%= u.last_name %>
+                 </option>
+               <% }) %>
+             <% } %>
+          </select>
+          <small class="text-muted">Hold CTRL/CMD to select multiple.</small>
+        </div>
+        
+        <div class="col-md-6">
+          <label class="form-label">Journal Name</label>
+          <input type="text" class="form-control" name="journal_name" value="<%= item ? (item.journal_name || '') : '' %>">
+        </div>
+        
+        <div class="col-md-6">
+          <label class="form-label">Publisher</label>
+          <input type="text" class="form-control" name="publisher" value="<%= item ? (item.publisher || '') : '' %>">
+        </div>
+        
+        <div class="col-md-3">
+          <label class="form-label">Year</label>
+          <input type="number" class="form-control" name="year" value="<%= item ? (item.year || '') : '' %>">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Month</label>
+          <input type="text" class="form-control" name="month" value="<%= item ? (item.month || '') : '' %>">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Volume</label>
+          <input type="text" class="form-control" name="volume" value="<%= item ? (item.volume || '') : '' %>">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Pages</label>
+          <input type="text" class="form-control" name="pages" value="<%= item ? (item.pages || '') : '' %>">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">DOI</label>
+          <input type="text" class="form-control" name="doi" value="<%= item ? (item.doi || '') : '' %>">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">ISBN</label>
+          <input type="text" class="form-control" name="isbn" value="<%= item ? (item.isbn || '') : '' %>">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">ISSN</label>
+          <input type="text" class="form-control" name="issn" value="<%= item ? (item.issn || '') : '' %>">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Corpus ID</label>
+          <input type="text" class="form-control" name="corpus_id" value="<%= item ? (item.corpus_id || '') : '' %>">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">URL</label>
+          <input type="url" class="form-control" name="url" value="<%= item ? (item.url || '') : '' %>">
+        </div>
+        
+        <div class="col-12">
+          <label class="form-label">Description / Abstract</label>
+          <textarea class="form-control" name="description" rows="4"><%= item ? (item.description || '') : '' %></textarea>
+        </div>
+
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" name="save_as" value="publish" class="btn btn-primary">
+          <i class="bi bi-check-lg me-1"></i><%= item ? 'Update' : 'Create' %>
+        </button>
+        <% if (!item || item.is_draft) { %>
+          <button type="submit" name="save_as" value="draft" class="btn btn-outline-secondary">
+            <i class="bi bi-file-earmark me-1"></i>Save Draft
+          </button>
+        <% } %>
+        <a href="/publications" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>

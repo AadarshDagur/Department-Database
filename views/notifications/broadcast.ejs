@@ -1,0 +1,45 @@
+<% layout('layouts/boilerplate') %>
+<div class="mb-3"><a href="/notifications" class="text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to Notifications</a></div>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white"><h3 class="mb-0">Broadcast Notification</h3></div>
+  <div class="card-body">
+    <form method="POST" action="/notifications/broadcast">
+      <div class="row g-3">
+        <div class="col-12"><label class="form-label">Title *</label><input type="text" name="title" class="form-control" required></div>
+        <div class="col-12"><label class="form-label">Message *</label><textarea name="message" class="form-control" rows="5" required></textarea></div>
+        
+        <div class="col-md-6"><label class="form-label">Target User Type</label>
+          <select name="target_role" class="form-select"><option value="">All Users</option>
+            <% [
+              { value: 'admin', label: 'Admin' },
+              { value: 'faculty', label: 'Faculty' },
+              { value: 'student', label: 'Student' }
+            ].forEach(r => { %>
+            <option value="<%= r.value %>"><%= r.label %></option><% }); %>
+          </select>
+        </div>
+        <div class="col-md-6"><label class="form-label">Expires After</label>
+          <select name="expires_hours" class="form-select">
+            <option value="">Never</option>
+            <option value="6">6 Hours</option>
+            <option value="12">12 Hours</option>
+            <option value="24">24 Hours</option>
+            <option value="72">3 Days</option>
+            <option value="168">7 Days</option>
+          </select>
+        </div>
+        <div class="col-md-6"><label class="form-label">Send Email</label>
+          <select name="send_email" class="form-select">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+
+        <div class="col-12 mt-4">
+          <button type="submit" class="btn btn-primary"><i class="bi bi-megaphone me-2"></i>Send Broadcast</button>
+          <a href="/notifications" class="btn btn-light ms-2">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
