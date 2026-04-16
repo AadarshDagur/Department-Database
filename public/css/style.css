@@ -118,12 +118,14 @@ a { transition: var(--transition); }
   left: 0;
   width: var(--sidebar-width);
   height: calc(100vh - var(--navbar-height));
+  height: calc(100dvh - var(--navbar-height)); /* Modern mobile dynamic viewport height */
   overflow-y: auto;
   background: var(--bg-card);
   border-right: 1px solid var(--border-color);
   z-index: 1030;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 16px 0;
+  padding-bottom: 80px; /* Add extra clearance at bottom for mobile browsers */
 }
 
 .sidebar-section-label {
