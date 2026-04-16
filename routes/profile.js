@@ -3,7 +3,11 @@ const router = express.Router();
 const pool = require('../config/database');
 const bcrypt = require('bcryptjs');
 const { isLoggedIn } = require('../middleware/auth');
-const upload = require('../middleware/upload');
+const uploadBlob = require('../middleware/uploadBlob');
+const { put } = require('@vercel/blob');
+const fsContent = require('fs');
+const pathExt = require('path');
+const crypto = require('crypto');
 const { formatUserType } = require('../utils/helpers');
 
 // Profile directory - list all users
@@ -112,14 +116,30 @@ router.get('/:id/edit', isLoggedIn, async (req, res) => {
 });
 
 // Update profile
-router.put('/:id', isLoggedIn, upload.single('profile_image'), async (req, res) => {
+router.put('/:id', isLoggedIn, uploadBlob.single('profile_image'), async (req, res) => {
   try {
     if (parseInt(req.params.id) !== req.session.user.id) {
       req.flash('error', 'Not authorized');
       return res.redirect(`/profile/${req.params.id}`);
     }
     const { first_name, last_name, get_otp_email, get_email_notification, get_email_broadcast } = req.body;
-    const profileImage = req.file ? `/uploads/${req.file.filename}` : undefined;
+    let profileImage = undefined;
+
+    if (req.file) {
+      const ext = pathExt.extname(req.file.originalname);
+      const filename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
+      
+      if (process.env.BLOB_READ_WRITE_TOKEN) {
+        const blob = await put(`profile_images/${filename}`, req.file.buffer, {
+          access: 'public',
+        });
+        profileImage = blob.url;
+      } else {
+        const uploadPath = pathExt.join(__dirname, '..', 'uploads', filename);
+        fsContent.writeFileSync(uploadPath, req.file.buffer);
+        profileImage = `/uploads/${filename}`;
+      }
+    }
 
     let sql = `UPDATE users SET first_name = $1, last_name = $2,
       get_otp_email = $3, get_email_notification = $4, get_email_broadcast = $5`;
