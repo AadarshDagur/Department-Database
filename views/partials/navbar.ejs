@@ -1,45 +1,54 @@
 <nav class="navbar navbar-expand-lg navbar-dark navbar-main fixed-top">
-  <div class="container-fluid px-3">
-    <a class="navbar-brand" href="/dashboard">
-      <img src="/img/logo.png" alt="IIT Ropar" width="38" height="38">
-      <span class="d-none d-sm-inline">Department Database</span>
-    </a>
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navTop" id="sidebarToggle">
+  <div class="container-fluid px-2 px-md-3 flex-nowrap">
+    
+    <!-- Sidebar Toggler (Visible only on mobile) -->
+    <button class="navbar-toggler border-0 px-1 me-2 d-lg-none" type="button" id="sidebarToggle">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navTop">
-      <ul class="navbar-nav ms-auto align-items-center gap-1">
-        <li class="nav-item">
-          <a class="nav-link position-relative" href="/notifications" title="Notifications">
-            <i class="bi bi-bell" style="font-size: 1.15rem;"></i>
-            <% if (unreadNotifications > 0) { %>
-              <span class="notification-badge"></span>
-            <% } %>
-            <span class="d-lg-none ms-1">Notifications</span>
-          </a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
-            <img src="<%= currentUser.profile_image || '/img/default.png' %>" onerror="this.src='/img/default.png'" class="navbar-user-avatar" alt="">
-            <span class="d-none d-md-inline"><%= currentUser.first_name %> <%= currentUser.last_name %></span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li class="px-3 py-2">
-              <div class="fw-semibold"><%= currentUser.first_name %> <%= currentUser.last_name %></div>
-              <small class="text-muted"><%= currentUser.email %></small>
-            </li>
-            <li><hr class="dropdown-divider my-1"></li>
-            <li><a class="dropdown-item" href="/profile/me"><i class="bi bi-person me-2"></i>My Profile</a></li>
-            <li><a class="dropdown-item" href="/profile/<%= currentUser.id %>/edit"><i class="bi bi-gear me-2"></i>Settings</a></li>
-            <li><hr class="dropdown-divider my-1"></li>
-            <li>
-              <form action="/logout" method="POST" class="d-inline">
-                <button class="dropdown-item text-danger" type="submit"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
-              </form>
-            </li>
-          </ul>
-        </li>
-      </ul>
+
+    <!-- Brand -->
+    <a class="navbar-brand d-flex align-items-center me-auto" href="/dashboard" style="min-width: 0;">
+      <img src="/img/logo.png" alt="IIT Ropar" width="34" height="34" class="me-2 flex-shrink-0 d-none d-sm-block">
+      <span class="d-none d-sm-inline" style="font-size: 1.1rem;">Department Database</span>
+      <span class="d-inline d-sm-none" style="font-size: 0.95rem; white-space: nowrap;">Department Database</span>
+    </a>
+    
+    <!-- Always Visible Icons -->
+    <div class="d-flex align-items-center ms-2 flex-shrink-0">
+      
+      <!-- Notifications -->
+      <a class="nav-link position-relative text-white py-2 px-2 px-md-3" href="/notifications" title="Notifications">
+        <i class="bi bi-bell" style="font-size: 1.25rem;"></i>
+        <% if (unreadNotifications > 0) { %>
+          <span class="notification-badge pe-none bg-danger rounded-circle position-absolute" style="top: 8px; right: 5px; width: 8px; height: 8px;"></span>
+        <% } %>
+      </a>
+
+      <!-- Profile Dropdown -->
+      <div class="dropdown ms-1">
+        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-white py-1 px-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="<%= currentUser.profile_image || '/img/default.png' %>" onerror="this.src='/img/default.png'" class="navbar-user-avatar border border-light" alt="" style="width: 34px; height: 34px; object-fit: cover; border-radius: 50%;">
+          <span class="d-none d-md-inline text-truncate" style="max-width: 150px;">
+            <%= currentUser.first_name %>
+          </span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end position-absolute shadow-sm" style="margin-top: 0.5rem;">
+          <li class="px-3 py-2">
+            <div class="fw-semibold text-truncate"><%= currentUser.first_name %> <%= currentUser.last_name %></div>
+            <small class="text-muted text-truncate d-block"><%= currentUser.email %></small>        
+          </li>
+          <li><hr class="dropdown-divider my-1"></li>
+          <li><a class="dropdown-item" href="/profile/me"><i class="bi bi-person me-2"></i>My Profile</a></li>
+          <li><a class="dropdown-item" href="/profile/<%= currentUser.id %>/edit"><i class="bi bi-gear me-2"></i>Settings</a></li>
+          <li><hr class="dropdown-divider my-1"></li>
+          <li>
+            <form action="/logout" method="POST" class="d-inline">
+              <button class="dropdown-item text-danger" type="submit"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+
     </div>
   </div>
 </nav>
