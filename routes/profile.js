@@ -130,19 +130,29 @@ router.put('/:id', isLoggedIn, uploadBlob.single('profile_image'), async (req, r
       const filename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
       
       if (process.env.BLOB_READ_WRITE_TOKEN) {
-        const blob = await put(`profile_images/${filename}`, req.file.buffer, {
-          access: 'public',
-        });
-        profileImage = blob.url;
+        try {
+          const blob = await put(`profile_images/${filename}`, req.file.buffer, { 
+            access: 'public',
+            token: process.env.BLOB_READ_WRITE_TOKEN
+          });
+          profileImage = blob.url;
+        } catch (blobErr) {
+          console.error('Vercel Blob Upload Error:', blobErr);
+          req.flash('error', 'Blob Upload Error: ' + blobErr.message);
+          return res.redirect(`/profile/${req.params.id}/edit`);
+        }
       } else {
-        const uploadPath = pathExt.join(__dirname, '..', 'uploads', filename);
-        fsContent.writeFileSync(uploadPath, req.file.buffer);
-        profileImage = `/uploads/${filename}`;
-      }
-    }
-
-    let sql = `UPDATE users SET first_name = $1, last_name = $2,
-      get_otp_email = $3, get_email_notification = $4, get_email_broadcast = $5`;
+        const destFolder = process.env.NODE_ENV === 'production' ? '/tmp' : pathExt.join(__dirname, '..', 'uploads');
+        const uploadPath = pathExt.join(destFolder, filename);  
+        try {
+          if (!fsContent.existsSync(destFolder)) fsContent.mkdirSync(destFolder, { recursive: true });
+          fsContent.writeFileSync(uploadPath, req.file.buffer);
+          profileImage = process.env.NODE_ENV === 'production' ? `/img/default.png` : `/uploads/${filename}`;
+        } catch(fsErr) {
+          console.error('File Save Error:', fsErr);
+          req.flash('error', 'Failed to save image locally: ' + fsErr.message);
+          return res.redirect(`/profile/${req.params.id}/edit`);
+        }
     const params = [first_name, last_name || '',
       get_otp_email === 'on', get_email_notification === 'on', get_email_broadcast === 'on'];
 
